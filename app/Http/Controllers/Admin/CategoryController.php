@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use Illuminate\Http\Request;
+
+class CategoryController extends Controller
+{
+    public function index()
+    {
+        $categories = Category::latest()->paginate(10);
+        return view('admin.categories.index', compact('categories'));
+    }
+
+    public function create()
+    {
+        return view('admin.categories.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name_ar' => 'required|string|max:255|unique:categories,name_ar',
+            'name_en' => 'required|string|max:255|unique:categories,name_en',
+        ]);
+
+        Category::create([
+            'name_ar' => $request->name_ar,
+            'name_en' => $request->name_en,
+        ]);
+
+        return redirect()->route('admin.categories.index')->with('success', 'تم إضافة القسم بنجاح');
+    }
+
+    public function edit(Category $category)
+    {
+        return view('admin.categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'name_ar' => 'required|string|max:255|unique:categories,name_ar,' . $category->id,
+            'name_en' => 'required|string|max:255|unique:categories,name_en,' . $category->id,
+        ]);
+
+        $category->update([
+            'name_ar' => $request->name_ar,
+            'name_en' => $request->name_en,
+        ]);
+
+        return redirect()->route('admin.categories.index')->with('success', 'تم تحديث القسم بنجاح');
+    }
+
+    public function destroy(Category $category)
+    {
+        $category->delete();
+        return redirect()->route('admin.categories.index')->with('success', 'تم حذف القسم بنجاح');
+    }
+}
