@@ -589,6 +589,67 @@
     </main>
 
 
+    @php
+        // يدعم سواء بعتّه كسجل واحد ($siteLink) أو كـ Collection ($siteLinks)
+        $linksRecord = $siteLink ?? ($siteLinks ?? null);
+        if ($linksRecord instanceof \Illuminate\Support\Collection) {
+            $linksRecord = $linksRecord->first();
+        }
+
+        $socialPlatforms = [
+            'facebook' => ['icon' => 'fa-brands fa-facebook-f', 'label' => 'Facebook'],
+            'instagram' => ['icon' => 'fa-brands fa-instagram', 'label' => 'Instagram'],
+            'tiktok' => ['icon' => 'fa-brands fa-tiktok', 'label' => 'TikTok'],
+            'snapchat' => ['icon' => 'fa-brands fa-snapchat', 'label' => 'Snapchat'],
+            'x' => ['icon' => 'fa-brands fa-x-twitter', 'label' => 'X'],
+            'whatsapp' => ['icon' => 'fa-brands fa-whatsapp', 'label' => 'WhatsApp'],
+            'youtube' => ['icon' => 'fa-brands fa-youtube', 'label' => 'YouTube'],
+            'linkedin' => ['icon' => 'fa-brands fa-linkedin-in', 'label' => 'LinkedIn'],
+        ];
+
+        $hasAnySocial = false;
+        if ($linksRecord) {
+            foreach ($socialPlatforms as $field => $meta) {
+                if (!empty($linksRecord->$field)) {
+                    $hasAnySocial = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+
+    <style>
+        .alf-footer-socials {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .alf-footer-social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: #f5d061;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .alf-footer-social-btn:hover {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #111111;
+            transform: translateY(-3px);
+        }
+    </style>
+
     <footer class="alf-footer" id="footer" dir="rtl">
         <div class="alf-footer-glow alf-footer-glow-one"></div>
         <div class="alf-footer-glow alf-footer-glow-two"></div>
@@ -608,7 +669,7 @@
 
                         <p data-i18n="footer.description"
                             data-ar="في شركة الفنان، نجمع بين الخبرة والإبداع والجودة لنقدم حلولاً متكاملة في الدعاية والإعلان والطباعة الرقمية والهدايا الدعائية، ونساعد علامتك التجارية على التميز."
-                            data-en="At Al Fannan, we combine experience, creativity, and quality to deliver comprehensive solutions in advertising, digital printing, and promotional gifts, helping your brand stand out.">
+                            data-en="At Al Fannan, we combine experience, creativity, and quality to provide integrated advertising, digital printing, and promotional gift solutions that help your brand stand out.">
                             في شركة الفنان، نجمع بين الخبرة والإبداع والجودة
                             لنقدم حلولاً متكاملة في الدعاية والإعلان والطباعة
                             الرقمية والهدايا الدعائية، ونساعد علامتك التجارية
@@ -626,11 +687,25 @@
                                     +18 عاماً من الخبرة
                                 </strong>
                                 <span data-i18n="footer.experienceText" data-ar="إبداع وجودة وثقة منذ البداية"
-                                    data-en="Creativity, Quality, and Trust from Day One">
+                                    data-en="Creativity, Quality & Trust from the Start">
                                     إبداع وجودة وثقة منذ البداية
                                 </span>
                             </div>
                         </div>
+
+                        @if ($hasAnySocial)
+                            <div class="alf-footer-socials">
+                                @foreach ($socialPlatforms as $field => $meta)
+                                    @if (!empty($linksRecord->$field))
+                                        <a href="{{ $linksRecord->$field }}" target="_blank"
+                                            rel="noopener noreferrer" class="alf-footer-social-btn"
+                                            aria-label="{{ $meta['label'] }}" title="{{ $meta['label'] }}">
+                                            <i class="{{ $meta['icon'] }}"></i>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -695,60 +770,15 @@
                         <h3 data-i18n="footer.servicesTitle" data-ar="خدماتنا" data-en="Our Services">خدماتنا</h3>
 
                         <ul class="alf-footer-links">
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.promotionalGifts" data-ar="الهدايا الدعائية"
-                                        data-en="Promotional Gifts">الهدايا الدعائية</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.paperPrinting" data-ar="المطبوعات الورقية"
-                                        data-en="Paper Printing">المطبوعات الورقية</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.identityPrinting" data-ar="مطبوعات الهوية"
-                                        data-en="Brand Identity Printing">مطبوعات الهوية</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.packaging" data-ar="التغليف"
-                                        data-en="Packaging">التغليف</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.signage" data-ar="اللوحات الإعلانية"
-                                        data-en="Advertising Signage">اللوحات الإعلانية</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.design" data-ar="التصميم" data-en="Design">التصميم</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('products.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-i18n="footer.dtfUv" data-ar="طباعة DTF وUV"
-                                        data-en="DTF & UV Printing">طباعة DTF وUV</span>
-                                </a>
-                            </li>
+                            @foreach ($categories->take(7) as $category)
+                                <li>
+                                    <a href="{{ route('products.index', ['category' => $category->id]) }}">
+                                        <i class="fa-solid fa-angle-left"></i>
+                                        <span data-ar="{{ $category->name_ar }}"
+                                            data-en="{{ $category->name_en ?: $category->name_ar }}">{{ $category->name_ar }}</span>
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
                 </div>
@@ -794,7 +824,7 @@
                                         data-en="Our Location">موقعنا</small>
                                     <strong data-i18n="footer.address"
                                         data-ar="مكة المكرمة - الشوقية - شارع أريكة بن شريح بجوار جامع الصابرين"
-                                        data-en="Makkah - Al Shawqiyyah - Areekah Bin Shuraih Street, Next to Al Sabireen Mosque">
+                                        data-en="Makkah - Al Shawqiyyah - Areekah bin Shuraih Street, next to Al Sabireen Mosque">
                                         مكة المكرمة - الشوقية - شارع أريكة بن شريح
                                         بجوار جامع الصابرين
                                     </strong>
@@ -839,12 +869,12 @@
                         data-en="All Rights Reserved ©">جميع الحقوق محفوظة ©</span>
                     <span id="alfFooterYear"></span>
                     <strong data-i18n="footer.companyName" data-ar="شركة الفنان للدعاية والإعلان والطباعة الرقمية"
-                        data-en="Al Fannan Advertising and Digital Printing Company">
+                        data-en="Al Fannan Advertising & Digital Printing Company">
                         شركة الفنان للدعاية والإعلان والطباعة الرقمية
                     </strong>
                 </p>
 
-                <a href="#products" class="alf-footer-backtop">
+                <a href="#home" class="alf-footer-backtop">
                     <span data-i18n="footer.backToTop" data-ar="العودة للأعلى" data-en="Back to Top">العودة
                         للأعلى</span>
                     <i class="fa-solid fa-arrow-up"></i>

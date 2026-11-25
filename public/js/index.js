@@ -862,6 +862,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Hero Slider
 
+    const sliderThumbs = document.querySelectorAll(".slider-thumb");
+
     function showSlide(index) {
         if (!heroSlides.length) return;
 
@@ -880,6 +882,13 @@ document.addEventListener("DOMContentLoaded", () => {
             dot.classList.toggle("active", active);
 
             dot.setAttribute("aria-current", active ? "true" : "false");
+        });
+
+        sliderThumbs.forEach((thumb, i) => {
+            const active = i === currentSlide;
+
+            thumb.classList.toggle("active", active);
+            thumb.setAttribute("aria-current", active ? "true" : "false");
         });
 
         if (currentSlideNumber) {
@@ -927,6 +936,13 @@ document.addEventListener("DOMContentLoaded", () => {
     heroDots.forEach((dot, index) => {
         dot.addEventListener("click", () => {
             goToSlide(index);
+        });
+    });
+
+    sliderThumbs.forEach((thumb, index) => {
+        thumb.addEventListener("click", () => {
+            const targetIndex = Number(thumb.dataset.slide ?? index);
+            goToSlide(targetIndex);
         });
     });
 

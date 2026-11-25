@@ -379,8 +379,8 @@
 
                             <div class="alf-detail-price-box">
                                 <div>
-                                    <span class="alf-detail-price-caption" data-ar="السعر يبدأ من"
-                                        data-en="Price Starts From">السعر يبدأ من</span>
+                                    <span class="alf-detail-price-caption" data-ar="السعر لكل قطعه"
+                                        data-en="Price per piece">السعر لكل قطعه</span>
 
                                     <div class="alf-detail-price">
                                         {{ number_format($product->price, 2) }}
@@ -567,6 +567,67 @@
         </div>
     </div>
 
+    @php
+        // يدعم سواء بعتّه كسجل واحد ($siteLink) أو كـ Collection ($siteLinks)
+        $linksRecord = $siteLink ?? ($siteLinks ?? null);
+        if ($linksRecord instanceof \Illuminate\Support\Collection) {
+            $linksRecord = $linksRecord->first();
+        }
+
+        $socialPlatforms = [
+            'facebook' => ['icon' => 'fa-brands fa-facebook-f', 'label' => 'Facebook'],
+            'instagram' => ['icon' => 'fa-brands fa-instagram', 'label' => 'Instagram'],
+            'tiktok' => ['icon' => 'fa-brands fa-tiktok', 'label' => 'TikTok'],
+            'snapchat' => ['icon' => 'fa-brands fa-snapchat', 'label' => 'Snapchat'],
+            'x' => ['icon' => 'fa-brands fa-x-twitter', 'label' => 'X'],
+            'whatsapp' => ['icon' => 'fa-brands fa-whatsapp', 'label' => 'WhatsApp'],
+            'youtube' => ['icon' => 'fa-brands fa-youtube', 'label' => 'YouTube'],
+            'linkedin' => ['icon' => 'fa-brands fa-linkedin-in', 'label' => 'LinkedIn'],
+        ];
+
+        $hasAnySocial = false;
+        if ($linksRecord) {
+            foreach ($socialPlatforms as $field => $meta) {
+                if (!empty($linksRecord->$field)) {
+                    $hasAnySocial = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+
+    <style>
+        .alf-footer-socials {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .alf-footer-social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: #f5d061;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .alf-footer-social-btn:hover {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #111111;
+            transform: translateY(-3px);
+        }
+    </style>
+
     <footer class="alf-footer" id="footer" dir="rtl">
         <div class="alf-footer-glow alf-footer-glow-one"></div>
         <div class="alf-footer-glow alf-footer-glow-two"></div>
@@ -584,8 +645,9 @@
                             </span>
                         </a>
 
-                        <p data-ar="في شركة الفنان، نجمع بين الخبرة والإبداع والجودة لنقدم حلولاً متكاملة في الدعاية والإعلان والطباعة الرقمية والهدايا الدعائية، ونساعد علامتك التجارية على التميز."
-                            data-en="At Al Fannan, we combine experience, creativity, and quality to provide integrated solutions in advertising, digital printing, and promotional gifts, helping your brand stand out.">
+                        <p data-i18n="footer.description"
+                            data-ar="في شركة الفنان، نجمع بين الخبرة والإبداع والجودة لنقدم حلولاً متكاملة في الدعاية والإعلان والطباعة الرقمية والهدايا الدعائية، ونساعد علامتك التجارية على التميز."
+                            data-en="At Al Fannan, we combine experience, creativity, and quality to provide integrated advertising, digital printing, and promotional gift solutions that help your brand stand out.">
                             في شركة الفنان، نجمع بين الخبرة والإبداع والجودة
                             لنقدم حلولاً متكاملة في الدعاية والإعلان والطباعة
                             الرقمية والهدايا الدعائية، ونساعد علامتك التجارية
@@ -598,55 +660,83 @@
                             </div>
 
                             <div>
-                                <strong data-ar="+18 عاماً من الخبرة" data-en="18+ Years of Experience">
+                                <strong data-i18n="footer.experienceTitle" data-ar="+18 عاماً من الخبرة"
+                                    data-en="18+ Years of Experience">
                                     +18 عاماً من الخبرة
                                 </strong>
-                                <span data-ar="إبداع وجودة وثقة منذ البداية"
-                                    data-en="Creativity, Quality, and Trust from the Start">
+                                <span data-i18n="footer.experienceText" data-ar="إبداع وجودة وثقة منذ البداية"
+                                    data-en="Creativity, Quality & Trust from the Start">
                                     إبداع وجودة وثقة منذ البداية
                                 </span>
                             </div>
                         </div>
+
+                        @if ($hasAnySocial)
+                            <div class="alf-footer-socials">
+                                @foreach ($socialPlatforms as $field => $meta)
+                                    @if (!empty($linksRecord->$field))
+                                        <a href="{{ $linksRecord->$field }}" target="_blank"
+                                            rel="noopener noreferrer" class="alf-footer-social-btn"
+                                            aria-label="{{ $meta['label'] }}" title="{{ $meta['label'] }}">
+                                            <i class="{{ $meta['icon'] }}"></i>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-md-6">
                     <div class="alf-footer-column">
-                        <h3 data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</h3>
+                        <h3 data-i18n="footer.quickLinksTitle" data-ar="روابط سريعة" data-en="Quick Links">روابط
+                            سريعة</h3>
 
                         <ul class="alf-footer-links">
                             <li>
                                 <a href="{{ url('/') }}">
                                     <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="الرئيسية" data-en="Home">الرئيسية</span>
+                                    <span data-i18n="footer.home" data-ar="الرئيسية" data-en="Home">الرئيسية</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{{ route('products.index') }}">
                                     <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="جميع المنتجات" data-en="All Products">جميع المنتجات</span>
+                                    <span data-i18n="footer.allProducts" data-ar="جميع المنتجات"
+                                        data-en="All Products">جميع المنتجات</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ url('/') }}#services">
+                                    <i class="fa-solid fa-angle-left"></i>
+                                    <span data-i18n="footer.services" data-ar="خدماتنا"
+                                        data-en="Our Services">خدماتنا</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{{ url('/') }}#about">
                                     <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="من نحن" data-en="About Us">من نحن</span>
+                                    <span data-i18n="footer.about" data-ar="من نحن" data-en="About Us">من
+                                        نحن</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{{ url('/') }}#why-us">
                                     <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="لماذا الفنان؟" data-en="Why Al Fannan?">لماذا الفنان؟</span>
+                                    <span data-i18n="footer.whyUs" data-ar="لماذا الفنان؟"
+                                        data-en="Why Al Fannan?">لماذا الفنان؟</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{{ url('/') }}#contact">
                                     <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</span>
+                                    <span data-i18n="footer.contact" data-ar="تواصل معنا" data-en="Contact Us">تواصل
+                                        معنا</span>
                                 </a>
                             </li>
                         </ul>
@@ -655,7 +745,7 @@
 
                 <div class="col-lg-3 col-md-6">
                     <div class="alf-footer-column">
-                        <h3 data-ar="خدماتنا" data-en="Our Services">خدماتنا</h3>
+                        <h3 data-i18n="footer.servicesTitle" data-ar="خدماتنا" data-en="Our Services">خدماتنا</h3>
 
                         <ul class="alf-footer-links">
                             @foreach ($categories->take(7) as $category)
@@ -673,7 +763,8 @@
 
                 <div class="col-lg-3 col-md-6">
                     <div class="alf-footer-column">
-                        <h3 data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</h3>
+                        <h3 data-i18n="footer.contactTitle" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا
+                        </h3>
 
                         <div class="alf-footer-contact-list">
 
@@ -683,7 +774,8 @@
                                 </span>
 
                                 <span>
-                                    <small data-ar="اتصل بنا" data-en="Call Us">اتصل بنا</small>
+                                    <small data-i18n="footer.callUs" data-ar="اتصل بنا" data-en="Call Us">اتصل
+                                        بنا</small>
                                     <strong dir="ltr">+966 54 595 3908</strong>
                                 </span>
                             </a>
@@ -694,7 +786,8 @@
                                 </span>
 
                                 <span>
-                                    <small data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</small>
+                                    <small data-i18n="footer.email" data-ar="البريد الإلكتروني"
+                                        data-en="Email Address">البريد الإلكتروني</small>
                                     <strong dir="ltr">alfanaan.adv2@gmail.com</strong>
                                 </span>
                             </a>
@@ -705,9 +798,11 @@
                                 </span>
 
                                 <span>
-                                    <small data-ar="موقعنا" data-en="Our Location">موقعنا</small>
-                                    <strong data-ar="مكة المكرمة - الشوقية - شارع أريكة بن شريح بجوار جامع الصابرين"
-                                        data-en="Makkah - Al Shawqiyyah - Areekah Bin Shuraih Street, Next to Al Sabireen Mosque">
+                                    <small data-i18n="footer.location" data-ar="موقعنا"
+                                        data-en="Our Location">موقعنا</small>
+                                    <strong data-i18n="footer.address"
+                                        data-ar="مكة المكرمة - الشوقية - شارع أريكة بن شريح بجوار جامع الصابرين"
+                                        data-en="Makkah - Al Shawqiyyah - Areekah bin Shuraih Street, next to Al Sabireen Mosque">
                                         مكة المكرمة - الشوقية - شارع أريكة بن شريح
                                         بجوار جامع الصابرين
                                     </strong>
@@ -723,37 +818,43 @@
             <div class="alf-footer-features">
                 <div class="alf-footer-feature">
                     <i class="fa-solid fa-medal"></i>
-                    <span data-ar="جودة في التنفيذ" data-en="Quality Workmanship">جودة في التنفيذ</span>
+                    <span data-i18n="footer.featureQuality" data-ar="جودة في التنفيذ"
+                        data-en="Quality Execution">جودة في التنفيذ</span>
                 </div>
 
                 <div class="alf-footer-feature">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span data-ar="تصاميم إبداعية" data-en="Creative Designs">تصاميم إبداعية</span>
+                    <span data-i18n="footer.featureCreative" data-ar="تصاميم إبداعية"
+                        data-en="Creative Designs">تصاميم إبداعية</span>
                 </div>
 
                 <div class="alf-footer-feature">
                     <i class="fa-solid fa-handshake"></i>
-                    <span data-ar="خدمة عملاء مميزة" data-en="Excellent Customer Service">خدمة عملاء مميزة</span>
+                    <span data-i18n="footer.featureSupport" data-ar="خدمة عملاء مميزة"
+                        data-en="Excellent Customer Service">خدمة عملاء مميزة</span>
                 </div>
 
                 <div class="alf-footer-feature">
                     <i class="fa-solid fa-tags"></i>
-                    <span data-ar="أسعار منافسة" data-en="Competitive Prices">أسعار منافسة</span>
+                    <span data-i18n="footer.featurePrices" data-ar="أسعار منافسة" data-en="Competitive Prices">أسعار
+                        منافسة</span>
                 </div>
             </div>
 
             <div class="alf-footer-bottom">
                 <p>
-                    <span data-ar="جميع الحقوق محفوظة ©" data-en="All Rights Reserved ©">جميع الحقوق محفوظة ©</span>
+                    <span data-i18n="footer.copyright" data-ar="جميع الحقوق محفوظة ©"
+                        data-en="All Rights Reserved ©">جميع الحقوق محفوظة ©</span>
                     <span id="alfFooterYear"></span>
-                    <strong data-ar="شركة الفنان للدعاية والإعلان والطباعة الرقمية"
-                        data-en="Al Fannan Advertising and Digital Printing Company">
+                    <strong data-i18n="footer.companyName" data-ar="شركة الفنان للدعاية والإعلان والطباعة الرقمية"
+                        data-en="Al Fannan Advertising & Digital Printing Company">
                         شركة الفنان للدعاية والإعلان والطباعة الرقمية
                     </strong>
                 </p>
 
-                <a href="#" class="alf-footer-backtop">
-                    <span data-ar="العودة للأعلى" data-en="Back to Top">العودة للأعلى</span>
+                <a href="#home" class="alf-footer-backtop">
+                    <span data-i18n="footer.backToTop" data-ar="العودة للأعلى" data-en="Back to Top">العودة
+                        للأعلى</span>
                     <i class="fa-solid fa-arrow-up"></i>
                 </a>
             </div>

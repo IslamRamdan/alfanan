@@ -364,6 +364,27 @@ return [
             'url'  => 'admin/blogs',
             'icon' => 'fas fa-blog',
         ],
+        [
+            'text' => 'الباقات',
+            'url'  => 'admin/packages',
+            'icon' => 'fas fa-fw fa-box-open',
+        ],
+        [
+            'text' => 'الشرائح',
+            'url'  => 'admin/hero-slides',
+            'icon' => 'fas fa-fw fa-images',
+        ],
+        [
+            'text' => 'العملاء',
+            'url'  => 'admin/clients',
+            'icon' => 'fas fa-fw fa-users',
+        ],
+        [
+            'text' => 'التواصل الاجتماعي',
+            'url'  => 'admin/site-links',
+            'icon' => 'fas fa-fw fa-share-alt',
+        ],
+
 
     ],
 

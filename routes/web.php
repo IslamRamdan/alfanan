@@ -2,19 +2,33 @@
 
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\HeroSlideController;
+use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SiteLinkController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Category;
+use App\Models\HeroSlide;
+use App\Models\Package;
 use App\Models\Product;
+use App\Models\SiteLink;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Route;
 
+use function PHPUnit\Framework\returnArgument;
+
 Route::get('/', function () {
+
     // جلب الأقسام الرئيسية ومعها الأقسام الفرعية المرتبطة بها
     $categories = Category::with('subCategories')->get();
+    $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
+    $slides = HeroSlide::where('is_active', true)->orderBy('sort_order')->get();
+    $clients = \App\Models\Client::where('is_active', true)->orderBy('sort_order')->get();
+    $siteLink = SiteLink::first();    // return $siteLinks;
 
-    return view('welcome', compact('categories'));
+    return view('welcome', compact('categories', 'packages', 'slides', 'clients', 'siteLink'));
 });
 
 Route::get('/dashboard', function () {
@@ -74,4 +88,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('/blogs', [BlogController::class, 'mdwna'])->name('blogs.index');
 Route::get('/blogs/{blog}', [BlogController::class, 'show'])->name('blogs.show');
 
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::resource('packages', PackageController::class)->except(['show']);
+    Route::resource('hero-slides', HeroSlideController::class)->except(['show']);
+    Route::resource('clients', ClientController::class);
+    Route::get('site-links', [SiteLinkController::class, 'index'])->name('site-links.index');
+    Route::put('site-links', [SiteLinkController::class, 'update'])->name('site-links.update');
+});
 require __DIR__ . '/auth.php';

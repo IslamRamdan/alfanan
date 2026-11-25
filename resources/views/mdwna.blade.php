@@ -351,6 +351,67 @@
     </main>
 
 
+    @php
+        // يدعم سواء بعتّه كسجل واحد ($siteLink) أو كـ Collection ($siteLinks)
+        $linksRecord = $siteLink ?? ($siteLinks ?? null);
+        if ($linksRecord instanceof \Illuminate\Support\Collection) {
+            $linksRecord = $linksRecord->first();
+        }
+
+        $socialPlatforms = [
+            'facebook' => ['icon' => 'fa-brands fa-facebook-f', 'label' => 'Facebook'],
+            'instagram' => ['icon' => 'fa-brands fa-instagram', 'label' => 'Instagram'],
+            'tiktok' => ['icon' => 'fa-brands fa-tiktok', 'label' => 'TikTok'],
+            'snapchat' => ['icon' => 'fa-brands fa-snapchat', 'label' => 'Snapchat'],
+            'x' => ['icon' => 'fa-brands fa-x-twitter', 'label' => 'X'],
+            'whatsapp' => ['icon' => 'fa-brands fa-whatsapp', 'label' => 'WhatsApp'],
+            'youtube' => ['icon' => 'fa-brands fa-youtube', 'label' => 'YouTube'],
+            'linkedin' => ['icon' => 'fa-brands fa-linkedin-in', 'label' => 'LinkedIn'],
+        ];
+
+        $hasAnySocial = false;
+        if ($linksRecord) {
+            foreach ($socialPlatforms as $field => $meta) {
+                if (!empty($linksRecord->$field)) {
+                    $hasAnySocial = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+
+    <style>
+        .alf-footer-socials {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .alf-footer-social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: #f5d061;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .alf-footer-social-btn:hover {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #111111;
+            transform: translateY(-3px);
+        }
+    </style>
+
     <footer class="alf-footer" id="footer" dir="rtl">
         <div class="alf-footer-glow alf-footer-glow-one"></div>
         <div class="alf-footer-glow alf-footer-glow-two"></div>
@@ -393,6 +454,20 @@
                                 </span>
                             </div>
                         </div>
+
+                        @if ($hasAnySocial)
+                            <div class="alf-footer-socials">
+                                @foreach ($socialPlatforms as $field => $meta)
+                                    @if (!empty($linksRecord->$field))
+                                        <a href="{{ $linksRecord->$field }}" target="_blank"
+                                            rel="noopener noreferrer" class="alf-footer-social-btn"
+                                            aria-label="{{ $meta['label'] }}" title="{{ $meta['label'] }}">
+                                            <i class="{{ $meta['icon'] }}"></i>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -414,13 +489,6 @@
                                     <i class="fa-solid fa-angle-left"></i>
                                     <span data-i18n="footer.allProducts" data-ar="جميع المنتجات"
                                         data-en="All Products">جميع المنتجات</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('blogs.index') }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <span data-ar="المدونة" data-en="Blog">المدونة</span>
                                 </a>
                             </li>
 
@@ -568,7 +636,7 @@
                     </strong>
                 </p>
 
-                <a href="#blogs" class="alf-footer-backtop">
+                <a href="#home" class="alf-footer-backtop">
                     <span data-i18n="footer.backToTop" data-ar="العودة للأعلى" data-en="Back to Top">العودة
                         للأعلى</span>
                     <i class="fa-solid fa-arrow-up"></i>

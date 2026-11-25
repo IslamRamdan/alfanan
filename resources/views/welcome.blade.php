@@ -172,19 +172,23 @@
 
         <section class="hero" id="home" aria-label="مقدمة الشركة" data-i18n-aria-label="hero.ariaLabel">
 
+            {{-- 1. صور الخلفية للسلايدر --}}
             <div class="hero-slides">
-                <div class="hero-slide active" style="--hero-image: url('{{ asset('images/7.jpg') }}');">
-                </div>
-
-                <div class="hero-slide" style="--hero-image: url('{{ asset('images/8.jpg') }}');">
-                </div>
-
+                @forelse($slides as $index => $slide)
+                    <div class="hero-slide {{ $index === 0 ? 'active' : '' }}"
+                        style="--hero-image: url('{{ asset('storage/' . $slide->image) }}');">
+                    </div>
+                @empty
+                    <div class="hero-slide active" style="--hero-image: url('{{ asset('images/7.jpg') }}');"></div>
+                    <div class="hero-slide" style="--hero-image: url('{{ asset('images/8.jpg') }}');"></div>
+                @endforelse
             </div>
 
             <div class="hero-overlay"></div>
             <div class="hero-ornament hero-ornament-one"></div>
             <div class="hero-ornament hero-ornament-two"></div>
 
+            {{-- 2. محتوى الهيرو الأساسي كما كان في الأول --}}
             <div class="container hero-container">
                 <div class="row align-items-center">
                     <div class="col-lg-6 col-xl-8">
@@ -193,6 +197,7 @@
                             <div class="img mb-4">
                                 <img src="{{ asset('images/logo-3.png') }}" height="100" alt="شركة الفنان">
                             </div>
+
                             <span class="eyebrow hero-eyebrow">
                                 <span class="first-span"></span>
                                 <span data-ar="شركة للدعاية والإعلان والطباعة الرقمية"
@@ -223,6 +228,7 @@
                                     </span>
                                     <i class="fa-solid fa-arrow-left"></i>
                                 </a>
+
                                 <a href="https://wa.me/966545953908" target="_blank" rel="noopener noreferrer"
                                     class="btn-outline-gold">
                                     <i class="fa-solid fa-phone"></i>
@@ -231,9 +237,8 @@
                                     </span>
                                 </a>
 
-                                <a href="https://drive.google.com/uc?export=download&id=1adtDDVwI5f0lPha_O6LOsXpAw7ySlot_"
-                                    target="_blank" rel="noopener noreferrer"
-                                    class="btn-outline-gold btn-profile-download">
+                                <a href="{{ asset('storage/' . $siteLink->company_profile_pdf) }}" target="_blank"
+                                    rel="noopener noreferrer" class="btn-outline-gold btn-profile-download">
                                     <i class="fa-solid fa-file-arrow-down"></i>
                                     <span data-ar="تحميل بروفايل الشركة" data-en="Download Company Profile">
                                         تحميل بروفايل الشركة
@@ -247,6 +252,7 @@
                 </div>
             </div>
 
+            {{-- 3. أزرار التحكم والعداد --}}
             <div class="hero-bottom container-fluid">
                 <div class="slider-controls">
 
@@ -258,7 +264,7 @@
                     <span class="slide-number">
                         <b id="currentSlide">01</b>
                         <span>/</span>
-                        <span>02</span>
+                        <span>{{ str_pad($slides->count() > 0 ? $slides->count() : 2, 2, '0', STR_PAD_LEFT) }}</span>
                     </span>
 
                     <div class="slide-progress">
@@ -278,16 +284,16 @@
                 </a>
             </div>
 
+            {{-- 4. نقاط السلايدر السفلية --}}
             <div class="hero-dots" aria-label="اختيار الشريحة" data-i18n-aria-label="hero.selectSlide">
-
-                <button class="hero-dot active" data-slide="0" aria-label="الشريحة الأولى"
-                    data-i18n-aria-label="hero.slideOne">
-                </button>
-
-                <button class="hero-dot" data-slide="1" aria-label="الشريحة الثانية"
-                    data-i18n-aria-label="hero.slideTwo">
-                </button>
-
+                @forelse($slides as $index => $slide)
+                    <button class="hero-dot {{ $index === 0 ? 'active' : '' }}" data-slide="{{ $index }}"
+                        aria-label="الشريحة {{ $index + 1 }}">
+                    </button>
+                @empty
+                    <button class="hero-dot active" data-slide="0" aria-label="الشريحة الأولى"></button>
+                    <button class="hero-dot" data-slide="1" aria-label="الشريحة الثانية"></button>
+                @endforelse
             </div>
 
         </section>
@@ -996,251 +1002,83 @@
 
                 <div class="alf-pricing-grid">
 
-                    <!-- Package 1 -->
-                    <article class="alf-package-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="alf-package-icon">
-                            <i class="fas fa-rocket"></i>
-                        </div>
+                    @foreach ($packages as $index => $package)
+                        @php
+                            $delay = ($index + 1) * 100;
+                            $featuresAr = $package->features ?? [];
+                            $featuresEn = $package->features_en ?? [];
+                            $whatsappText = urlencode(
+                                "مرحبًا، أرغب في طلب {$package->name} بسعر " .
+                                    number_format($package->price, 0) .
+                                    " {$package->currency}",
+                            );
+                        @endphp
 
-                        <span class="alf-package-badge" data-i18n="pricing.packages.launch.badge" data-ar="وفر 15%"
-                            data-en="Save 15%">
-                            وفر 15%
-                        </span>
+                        <article class="alf-package-card {{ $package->is_featured ? 'alf-package-featured' : '' }}"
+                            data-aos="fade-up" data-aos-delay="{{ $delay }}">
 
-                        <div class="alf-package-content">
-                            <h3 data-i18n="pricing.packages.launch.name" data-ar="باقة الانطلاقة"
-                                data-en="Starter Package">باقة الانطلاقة</h3>
-
-                            <p class="alf-package-description" data-i18n="pricing.packages.launch.description"
-                                data-ar="مثالية للمشاريع الناشئة لبدء نشاطك بكفاءة واحترافية."
-                                data-en="Ideal for startups looking to launch their business with efficiency and professionalism.">
-                                مثالية للمشاريع الناشئة لبدء نشاطك بكفاءة واحترافية.
-                            </p>
-
-                            <div class="alf-package-price">
-                                <span class="alf-price-currency" data-i18n="pricing.currency" data-ar="ر.س"
-                                    data-en="SAR">ر.س</span>
-                                <strong>1,000</strong>
+                            <div class="alf-package-icon">
+                                <i class="{{ $package->icon ?: 'fas fa-box-open' }}"></i>
                             </div>
 
-                            <div class="alf-package-separator"></div>
+                            @if ($package->badge)
+                                <span class="alf-package-badge" data-ar="{{ $package->badge }}"
+                                    data-en="{{ $package->badge_en ?: $package->badge }}">
+                                    @if ($package->is_featured)
+                                        <i class="fas fa-crown"></i>
+                                    @endif
+                                    <span>{{ $package->badge }}</span>
+                                </span>
+                            @endif
 
-                            <ul class="alf-package-features">
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.launch.features.0"
-                                        data-ar="تصميم شعار احترافي" data-en="Professional Logo Design">تصميم شعار
-                                        احترافي</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.launch.features.1"
-                                        data-ar="1000 كرت شخصية فاخر" data-en="1,000 Premium Business Cards">1000
-                                        كرت شخصية فاخر</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.launch.features.2"
-                                        data-ar="1000 فلاير A5" data-en="1,000 A5 Flyers">1000 فلاير A5</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.launch.features.3"
-                                        data-ar="رول أب بانر 85×200" data-en="85×200 cm Roll-Up Banner">رول أب بانر
-                                        85×200</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.launch.features.4"
-                                        data-ar="أظرف وورق رسمي مطبوع" data-en="Printed Envelopes & Letterheads">أظرف
-                                        وورق رسمي مطبوع</span></li>
-                            </ul>
+                            <div class="alf-package-content">
+                                <h3 data-ar="{{ $package->name }}"
+                                    data-en="{{ $package->name_en ?: $package->name }}">
+                                    {{ $package->name }}
+                                </h3>
 
-                            <a href="https://wa.me/966545953908" class="alf-package-btn" data-package="launch"
-                                data-price="1000" target="_blank" rel="noopener noreferrer">
+                                @if ($package->description)
+                                    <p class="alf-package-description" data-ar="{{ $package->description }}"
+                                        data-en="{{ $package->description_en ?: $package->description }}">
+                                        {{ $package->description }}
+                                    </p>
+                                @endif
 
-                                <span data-i18n="pricing.orderButton" data-ar="اطلب الباقة عبر واتساب"
-                                    data-en="Order via WhatsApp">اطلب الباقة عبر واتساب</span>
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </article>
+                                <div class="alf-package-price">
+                                    <span class="alf-price-currency" data-ar="{{ $package->currency }}"
+                                        data-en="{{ $package->currency === 'ر.س' ? 'SAR' : $package->currency }}">
+                                        {{ $package->currency }}
+                                    </span>
+                                    <strong>{{ number_format($package->price, 0) }}</strong>
+                                </div>
 
-                    <!-- Package 2 -->
-                    <article class="alf-package-card alf-package-featured" data-aos="fade-up" data-aos-delay="200">
-                        <div class="alf-package-icon">
-                            <i class="fas fa-gem"></i>
-                        </div>
+                                <div class="alf-package-separator"></div>
 
-                        <span class="alf-package-badge">
-                            <i class="fas fa-crown"></i>
-                            <span data-i18n="pricing.packages.identity.badge" data-ar="الأكثر طلبًا"
-                                data-en="Most Popular">الأكثر طلبًا</span>
-                        </span>
+                                <ul class="alf-package-features">
+                                    @foreach ($featuresAr as $fIndex => $featureAr)
+                                        @php
+                                            $featureEn = $featuresEn[$fIndex] ?? $featureAr;
+                                        @endphp
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            <span data-ar="{{ $featureAr }}" data-en="{{ $featureEn }}">
+                                                {{ $featureAr }}
+                                            </span>
+                                        </li>
+                                    @endforeach
+                                </ul>
 
-                        <div class="alf-package-content">
-                            <h3 data-i18n="pricing.packages.identity.name" data-ar="باقة الهوية الذهبية"
-                                data-en="Golden Brand Identity Package">باقة الهوية الذهبية</h3>
+                                <a href="https://wa.me/966545953908?text={{ $whatsappText }}" class="alf-package-btn"
+                                    data-package="{{ $package->id }}" data-price="{{ (float) $package->price }}"
+                                    target="_blank" rel="noopener noreferrer">
 
-                            <p class="alf-package-description" data-i18n="pricing.packages.identity.description"
-                                data-ar="الاختيار الأمثل لبناء هوية تجارية شاملة باحتراف."
-                                data-en="The perfect choice for building a complete and professional brand identity.">
-                                الاختيار الأمثل لبناء هوية تجارية شاملة باحتراف.
-                            </p>
-
-                            <div class="alf-package-price">
-                                <span class="alf-price-currency" data-i18n="pricing.currency" data-ar="ر.س"
-                                    data-en="SAR">ر.س</span>
-                                <strong>1,899</strong>
+                                    <span data-i18n="pricing.orderButton" data-ar="اطلب الباقة عبر واتساب"
+                                        data-en="Order via WhatsApp">اطلب الباقة عبر واتساب</span>
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
                             </div>
-
-                            <div class="alf-package-separator"></div>
-
-                            <ul class="alf-package-features">
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.0"
-                                        data-ar="هوية تجارية كاملة + دليل إرشادي"
-                                        data-en="Complete Brand Identity + Brand Guidelines">هوية تجارية كاملة + دليل
-                                        إرشادي</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.1"
-                                        data-ar="2000 كرت شخصية مع تصميم"
-                                        data-en="2,000 Custom-Designed Business Cards">2000 كرت شخصية مع تصميم</span>
-                                </li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.2"
-                                        data-ar="2500 فلاير أو بروشور A4" data-en="2,500 A4 Flyers or Brochures">2500
-                                        فلاير أو بروشور A4</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.3"
-                                        data-ar="حرف بارز LED لمقر شركتك (60 سم)"
-                                        data-en="60 cm LED 3D Letter for Your Business Premises">حرف بارز LED لمقر
-                                        شركتك (60 سم)</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.4"
-                                        data-ar="100 كيس ورقي فاخر مطبوع" data-en="100 Premium Printed Paper Bags">100
-                                        كيس ورقي فاخر مطبوع</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.identity.features.5"
-                                        data-ar="ختم أوتوماتيكي + إحداثات أسماء"
-                                        data-en="Self-Inking Stamp + Name Personalization">ختم أوتوماتيكي + إحداثات
-                                        أسماء</span></li>
-                            </ul>
-
-                            <a href="https://wa.me/966545953908" class="alf-package-btn" data-package="identity"
-                                data-price="1899" target="_blank" rel="noopener noreferrer">
-
-                                <span data-i18n="pricing.orderButton" data-ar="اطلب الباقة عبر واتساب"
-                                    data-en="Order via WhatsApp">اطلب الباقة عبر واتساب</span>
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </article>
-
-                    <!-- Package 3 -->
-                    <article class="alf-package-card" data-aos="fade-up" data-aos-delay="300">
-                        <div class="alf-package-icon">
-                            <i class="fas fa-building"></i>
-                        </div>
-
-                        <span class="alf-package-badge" data-i18n="pricing.packages.business.badge" data-ar="وفر 25%"
-                            data-en="Save 25%">
-                            وفر 25%
-                        </span>
-
-                        <div class="alf-package-content">
-                            <h3 data-i18n="pricing.packages.business.name" data-ar="باقة المؤسسات"
-                                data-en="Corporate Package">باقة المؤسسات</h3>
-
-                            <p class="alf-package-description" data-i18n="pricing.packages.business.description"
-                                data-ar="حلول متكاملة للشركات والمؤسسات الكبرى."
-                                data-en="Comprehensive solutions for large companies and organizations.">
-                                حلول متكاملة للشركات والمؤسسات الكبرى.
-                            </p>
-
-                            <div class="alf-package-price">
-                                <span class="alf-price-currency" data-i18n="pricing.currency" data-ar="ر.س"
-                                    data-en="SAR">ر.س</span>
-                                <strong>3,999</strong>
-                            </div>
-
-                            <div class="alf-package-separator"></div>
-
-                            <ul class="alf-package-features">
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.0"
-                                        data-ar="هوية تجارية + دليل إرشادي كامل"
-                                        data-en="Brand Identity + Complete Brand Guidelines">هوية تجارية + دليل إرشادي
-                                        كامل</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.1"
-                                        data-ar="5000 كرت شخصية فاخر" data-en="5,000 Premium Business Cards">5000
-                                        كرت شخصية فاخر</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.2"
-                                        data-ar="10000 فلاير A5" data-en="10,000 A5 Flyers">10000 فلاير A5</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.3"
-                                        data-ar="2 رول أب بانر إعلاني" data-en="2 Advertising Roll-Up Banners">2 رول
-                                        أب بانر إعلاني</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.4"
-                                        data-ar="200 تيشيرت موحد مطبوع"
-                                        data-en="200 Custom-Printed Uniform T-Shirts">200 تيشيرت موحد مطبوع</span>
-                                </li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.5"
-                                        data-ar="500 هدية دعائية (أكواب + أقلام)"
-                                        data-en="500 Promotional Gifts (Mugs + Pens)">500 هدية دعائية (أكواب +
-                                        أقلام)</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.business.features.6"
-                                        data-ar="شهر إدارة سوشيال ميديا مجانًا"
-                                        data-en="One Month of Free Social Media Management">شهر إدارة سوشيال ميديا
-                                        مجانًا</span></li>
-                            </ul>
-
-                            <a href="https://wa.me/966545953908" class="alf-package-btn" data-package="business"
-                                data-price="3999" target="_blank" rel="noopener noreferrer">
-
-                                <span data-i18n="pricing.orderButton" data-ar="اطلب الباقة عبر واتساب"
-                                    data-en="Order via WhatsApp">اطلب الباقة عبر واتساب</span>
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </article>
-
-                    <!-- Package 4 -->
-                    <article class="alf-package-card" data-aos="fade-up" data-aos-delay="400">
-                        <div class="alf-package-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-
-                        <span class="alf-package-badge" data-i18n="pricing.packages.events.badge"
-                            data-ar="لفترة محدودة" data-en="Limited Time Offer">
-                            لفترة محدودة
-                        </span>
-
-                        <div class="alf-package-content">
-                            <h3 data-i18n="pricing.packages.events.name" data-ar="باقة المناسبات"
-                                data-en="Events Package">باقة المناسبات</h3>
-
-                            <p class="alf-package-description" data-i18n="pricing.packages.events.description"
-                                data-ar="كل ما تحتاجه للعيد والتخرج واليوم الوطني."
-                                data-en="Everything you need for Eid, graduations, and National Day celebrations.">
-                                كل ما تحتاجه للعيد والتخرج واليوم الوطني.
-                            </p>
-
-                            <div class="alf-package-price">
-                                <span class="alf-price-currency" data-i18n="pricing.currency" data-ar="ر.س"
-                                    data-en="SAR">ر.س</span>
-                                <strong>1,499</strong>
-                            </div>
-
-                            <div class="alf-package-separator"></div>
-
-                            <ul class="alf-package-features">
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.events.features.0"
-                                        data-ar="300 باقة هدايا موسمية مخصصة"
-                                        data-en="300 Customized Seasonal Gift Sets">300 باقة هدايا موسمية مخصصة</span>
-                                </li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.events.features.1"
-                                        data-ar="500 ستيكر وملصقات مناسبة" data-en="500 Event Stickers and Labels">500
-                                        ستيكر وملصقات مناسبة</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.events.features.2"
-                                        data-ar="بنر ترويجي 1×3 متر" data-en="1×3 m Promotional Banner">بنر ترويجي
-                                        1×3 متر</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.events.features.3"
-                                        data-ar="تصميم بوستات المناسبة (6 منشورات)"
-                                        data-en="6 Custom Event Social Media Posts">تصميم بوستات المناسبة (6
-                                        منشورات)</span></li>
-                                <li><i class="fas fa-check"></i><span data-i18n="pricing.packages.events.features.4"
-                                        data-ar="تغليف وأكياس مطبوعة" data-en="Printed Packaging and Bags">تغليف
-                                        وأكياس مطبوعة</span></li>
-                            </ul>
-
-                            <a href="https://wa.me/966545953908" class="alf-package-btn" data-package="events"
-                                data-price="1499" target="_blank" rel="noopener noreferrer">
-
-                                <span data-i18n="pricing.orderButton" data-ar="اطلب الباقة عبر واتساب"
-                                    data-en="Order via WhatsApp">اطلب الباقة عبر واتساب</span>
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </article>
+                        </article>
+                    @endforeach
 
                 </div>
 
@@ -1471,8 +1309,8 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="contactService" data-i18n="contact.serviceLabel"
-                                        data-ar="نوع الخدمة" data-en="Service Type">
+                                    <label for="contactService" data-i18n="contact.serviceLabel" data-ar="نوع الخدمة"
+                                        data-en="Service Type">
                                         نوع الخدمة
                                     </label>
 
@@ -1481,8 +1319,7 @@
 
                                         <select id="contactService" name="service" required>
                                             <option value="" selected disabled
-                                                data-i18n="contact.servicePlaceholder"
-                                                data-ar="اختر الخدمة المطلوبة"
+                                                data-i18n="contact.servicePlaceholder" data-ar="اختر الخدمة المطلوبة"
                                                 data-en="Select the Required Service">
                                                 اختر الخدمة المطلوبة
                                             </option>
@@ -1682,9 +1519,230 @@
 
             </div>
         </section>
+        @php
+            $logoGroups = [
+                [
+                    'id' => 'clients',
+                    'title_ar' => 'العملاء والشركاء',
+                    'title_en' => 'Our Clients',
+                    'sub_ar' => 'ثقة عملائنا هي أساس نجاحنا',
+                    'sub_en' => 'Our clients\' trust is the foundation of our success',
+                    'items' => $clients ?? collect(),
+                ],
+            ];
+        @endphp
+
+        <section class="logos-section py-5" id="partners-clients" dir="rtl">
+            <div class="container">
+
+                @foreach ($logoGroups as $group)
+                    @continue($group['items']->isEmpty())
+
+                    <div class="logos-group {{ !$loop->last ? 'mb-5' : '' }}" id="{{ $group['id'] }}"
+                        data-aos="fade-up">
+
+                        <div class="logos-heading text-center mb-4">
+                            <h2 class="logos-title" data-ar="{{ $group['title_ar'] }}"
+                                data-en="{{ $group['title_en'] }}">
+                                {{ $group['title_ar'] }}
+                            </h2>
+                            <p class="logos-subtitle mb-0" data-ar="{{ $group['sub_ar'] }}"
+                                data-en="{{ $group['sub_en'] }}">
+                                {{ $group['sub_ar'] }}
+                            </p>
+                            <span class="logos-line"></span>
+                        </div>
+
+                        <div class="row g-3 g-md-4 justify-content-center">
+                            @foreach ($group['items'] as $item)
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                                    <div class="logo-card" title="{{ $item->name }}">
+                                        <img src="{{ asset('storage/' . $item->logo) }}" alt="{{ $item->name }}"
+                                            class="logo-img" loading="lazy">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+
+            </div>
+        </section>
+
+        <style>
+            .logos-section {
+                --logos-gold: var(--gold, #b08a5a);
+                --logos-gold-dark: var(--gold-dark, #8f6b43);
+                --logos-ink: var(--dark, #33343f);
+                position: relative;
+                overflow: hidden;
+                color: var(--logos-ink);
+                background:
+                    radial-gradient(circle at 95% 8%, rgba(176, 138, 90, .16), transparent 35%),
+                    radial-gradient(circle at 5% 95%, rgba(176, 138, 90, .14), transparent 38%),
+                    linear-gradient(135deg, #fdfaf6 0%, #f6eee5 100%);
+            }
+
+            /* شكل زخرفي بنفس لمسة صورة "من نحن" */
+            .logos-section::before {
+                content: "";
+                position: absolute;
+                top: -90px;
+                left: -70px;
+                width: 260px;
+                height: 260px;
+                background: linear-gradient(160deg, #cdb08a, #b08a5a);
+                opacity: .28;
+                border-radius: 60px 120px 60px 120px;
+                transform: rotate(-12deg);
+                pointer-events: none;
+            }
+
+            .logos-section::after {
+                content: "";
+                position: absolute;
+                bottom: -110px;
+                right: -80px;
+                width: 280px;
+                height: 280px;
+                border: 2px solid rgba(176, 138, 90, .35);
+                border-radius: 90px 40px 90px 40px;
+                transform: rotate(10deg);
+                pointer-events: none;
+            }
+
+            .logos-section .container {
+                position: relative;
+                z-index: 1;
+            }
+
+            .logos-title {
+                font-weight: 800;
+                font-size: 1.9rem;
+                margin-bottom: .4rem;
+                color: var(--logos-ink);
+            }
+
+            .logos-subtitle {
+                color: var(--logos-gold-dark);
+                font-weight: 600;
+            }
+
+            .logos-line {
+                display: block;
+                width: 70px;
+                height: 3px;
+                margin: .9rem auto 0;
+                background: linear-gradient(90deg, transparent, var(--logos-gold), transparent);
+                border-radius: 3px;
+            }
+
+            .logo-card {
+                height: 130px;
+                padding: 18px 22px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                border: 1px solid rgba(176, 138, 90, .18);
+                border-radius: 18px;
+                box-shadow: 0 6px 18px rgba(120, 90, 55, .07);
+                transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+            }
+
+            .logo-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--logos-gold);
+                box-shadow: 0 14px 30px rgba(120, 90, 55, .18);
+            }
+
+            .logo-img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                filter: grayscale(100%);
+                opacity: .8;
+                transition: filter .25s ease, opacity .25s ease;
+            }
+
+            .logo-card:hover .logo-img {
+                filter: grayscale(0);
+                opacity: 1;
+            }
+
+            @media (max-width: 575.98px) {
+                .logo-card {
+                    height: 105px;
+                    padding: 14px;
+                }
+            }
+        </style>
 
     </main>
 
+
+
+
+    @php
+        // يدعم سواء بعتّه كسجل واحد ($siteLink) أو كـ Collection ($siteLinks)
+        $linksRecord = $siteLink ?? ($siteLinks ?? null);
+        if ($linksRecord instanceof \Illuminate\Support\Collection) {
+            $linksRecord = $linksRecord->first();
+        }
+
+        $socialPlatforms = [
+            'facebook' => ['icon' => 'fa-brands fa-facebook-f', 'label' => 'Facebook'],
+            'instagram' => ['icon' => 'fa-brands fa-instagram', 'label' => 'Instagram'],
+            'tiktok' => ['icon' => 'fa-brands fa-tiktok', 'label' => 'TikTok'],
+            'snapchat' => ['icon' => 'fa-brands fa-snapchat', 'label' => 'Snapchat'],
+            'x' => ['icon' => 'fa-brands fa-x-twitter', 'label' => 'X'],
+            'whatsapp' => ['icon' => 'fa-brands fa-whatsapp', 'label' => 'WhatsApp'],
+            'youtube' => ['icon' => 'fa-brands fa-youtube', 'label' => 'YouTube'],
+            'linkedin' => ['icon' => 'fa-brands fa-linkedin-in', 'label' => 'LinkedIn'],
+        ];
+
+        $hasAnySocial = false;
+        if ($linksRecord) {
+            foreach ($socialPlatforms as $field => $meta) {
+                if (!empty($linksRecord->$field)) {
+                    $hasAnySocial = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+
+    <style>
+        .alf-footer-socials {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .alf-footer-social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: #f5d061;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .alf-footer-social-btn:hover {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #111111;
+            transform: translateY(-3px);
+        }
+    </style>
 
     <footer class="alf-footer" id="footer" dir="rtl">
         <div class="alf-footer-glow alf-footer-glow-one"></div>
@@ -1728,6 +1786,20 @@
                                 </span>
                             </div>
                         </div>
+
+                        @if ($hasAnySocial)
+                            <div class="alf-footer-socials">
+                                @foreach ($socialPlatforms as $field => $meta)
+                                    @if (!empty($linksRecord->$field))
+                                        <a href="{{ $linksRecord->$field }}" target="_blank"
+                                            rel="noopener noreferrer" class="alf-footer-social-btn"
+                                            aria-label="{{ $meta['label'] }}" title="{{ $meta['label'] }}">
+                                            <i class="{{ $meta['icon'] }}"></i>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -1781,7 +1853,8 @@
                                 <a href="{{ url('/') }}#contact">
                                     <i class="fa-solid fa-angle-left"></i>
                                     <span data-i18n="footer.contact" data-ar="تواصل معنا"
-                                        data-en="Contact Us">تواصل معنا</span>
+                                        data-en="Contact Us">تواصل
+                                        معنا</span>
                                 </a>
                             </li>
                         </ul>
