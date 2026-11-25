@@ -1503,11 +1503,9 @@
                     <div class="location-map">
 
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3714.991229523252!2d39.79232768506134!3d21.390249985803674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjHCsDIzJzI0LjkiTiAzOcKwNDcnMjQuNSJF!5e0!3m2!1sar!2seg!4v1792419112432!5m2!1sar!2seg"
-                            title="موقع شركة الفنان للدعاية والإعلان على خرائط Google"
-                            data-i18n-title="contact.mapTitle" width="100%" height="100%" style="border: 0;"
-                            allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
-                        </iframe>
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3540.8502987730067!2d39.7901538!3d21.390279600000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c21b818c5b266d%3A0xfd5c0ced37c1148d!2z2KfZhNmB2YbYp9mGINmE2YTYr9i52KfZitipINmI2KfZhNil2LnZhNin2YYg2KfZhNi02YjZgtmK2Kk!5e1!3m2!1sen!2seg!4v1795623855978!5m2!1sen!2seg"
+                            width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
                         <span class="location-map-label">
                             <i class="fas fa-map-marked-alt"></i>
