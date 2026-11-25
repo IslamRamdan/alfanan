@@ -237,7 +237,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{{ asset('storage/' . $siteLink->company_profile_pdf ?? '') }}"
+                                <a href="{{ $siteLink?->company_profile_pdf ? asset('storage/' . $siteLink->company_profile_pdf) : '#' }}"
                                     target="_blank" rel="noopener noreferrer"
                                     class="btn-outline-gold btn-profile-download">
                                     <i class="fa-solid fa-file-arrow-down"></i>
